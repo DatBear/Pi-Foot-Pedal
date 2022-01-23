@@ -4,7 +4,7 @@ using PiFootPedal.Services;
 
 namespace PiFootPedal.Controllers;
 
-public class SetupController : BaseController
+public class SetupController : BaseApiController
 {
     private readonly ConfigService _configService;
     private readonly PollService _pollService;

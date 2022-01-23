@@ -2,7 +2,7 @@
 
 namespace PiFootPedal.Controllers;
 
-public class ConfigController : BaseController
+public class ConfigController : BaseApiController
 {
     private readonly ConfigService _configService;
     private readonly PollService _pollService;

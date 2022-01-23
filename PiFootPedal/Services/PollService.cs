@@ -33,6 +33,7 @@ public class PollService
     {
         _configService = configService;
         PollMode = PollModes.SendKeys;
+        
     }
 
     public async Task Start()

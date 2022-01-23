@@ -1,4 +1,5 @@
 using System.Device.Gpio;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using PiFootPedal.Services;
 
@@ -30,7 +31,6 @@ builder.Services.Add(ServiceDescriptor.Singleton(x =>
 }));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,10 +44,36 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
+var reactBuildPath = Path.Combine(builder.Environment.ContentRootPath, "ClientApp", "build");
+if (Directory.Exists(reactBuildPath))
+{
+    //todo this whole setup feels pretty hacky :(
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        RequestPath = "/app",
+        FileProvider = new PhysicalFileProvider(reactBuildPath)
+    });
+
+    app.Map("/home", x =>
+    {
+        x.Run(z =>
+        {
+            z.Response.Redirect("/app/index.html");
+            return Task.FromResult(0);
+        });
+    });
+}
+
+
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
+});
 
 var pollService = app.Services.GetService<PollService>();
 Task.Run(async () =>
@@ -60,7 +86,6 @@ Task.Run(async () =>
     {
         Console.WriteLine($"Error starting pollService: {e}");
     }
-    
 });
 
 app.Run();
