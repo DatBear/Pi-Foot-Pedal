@@ -23,9 +23,9 @@ public class SetupController : BaseApiController
     }
 
     [HttpPost("stop")]
-    public async Task<IActionResult> Stop()
+    public async Task<IActionResult> Stop(bool save = true)
     {
-        var success = await _pollService.ExitSetupMode();
+        var success = await _pollService.ExitSetupMode(save);
         return Ok(success);
     }
 

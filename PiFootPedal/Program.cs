@@ -41,11 +41,20 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    
 }
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(_ => true) // allow any origin
+    .AllowCredentials()); // allow credentials
+
 
 var reactBuildPath = Path.Combine(builder.Environment.ContentRootPath, "ClientApp", "build");
 if (Directory.Exists(reactBuildPath))

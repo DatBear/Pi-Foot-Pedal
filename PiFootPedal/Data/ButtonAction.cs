@@ -59,10 +59,10 @@ public class ButtonAction
     private async Task Press(KeyDescription key, bool release = false)
     {
         await key.PreSleep();
-        Console.WriteLine($"{key}");
+        Console.WriteLine($"{key}");//todo write to /dev/hidg0 eventually
         if (release)
         {
-            Console.WriteLine($"^{key}");
+            Console.WriteLine($"^{key}");//todo write to /dev/hidg0 eventually
         }
         await key.PostSleep();
     }
@@ -70,7 +70,7 @@ public class ButtonAction
     private async Task Release(KeyDescription key)
     {
         await key.PreSleep();
-        Console.WriteLine($"^{key}");
+        Console.WriteLine($"^{key}");//todo write to /dev/hidg0 eventually
         await key.PostSleep();
     }
 }

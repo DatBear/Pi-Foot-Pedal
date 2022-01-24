@@ -1,0 +1,22 @@
+.button-selector{
+    background-color: transparent;
+    border: 1px solid black;
+    border-radius: 7px;
+    margin: 10px;
+    padding: 5px 10px;
+}
+
+.button-selector div{
+    font-size: 30px;
+    border-top: 1px solid black;
+    margin-top: 5px;
+}
+
+.button-selector.selected{
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.button-selector.selected div{
+    border-color: #007bff;
+}

@@ -59,7 +59,7 @@ public class PollService
         _gpio.OpenPin(pin, pullUpSupport ? PinMode.InputPullUp : PinMode.Input);
         _pinChanges[pin] = new ButtonState(pin, PinEventTypes.Rising, Stopwatch.GetTimestamp());
         _gpio.RegisterCallbackForPinValueChangedEvent(pin, PinEventTypes.Rising | PinEventTypes.Falling, OnPinChanged);
-        return true;
+        return _gpio.IsPinOpen(pin);
     }
 
     private void UnregisterButton(int pin)
@@ -135,7 +135,11 @@ public class PollService
         {
             Console.WriteLine($"registering pin {pin}");
             UnregisterButton(pin);
-            RegisterButton(pin);
+            var registered = RegisterButton(pin);
+            if (registered)
+            {
+                Console.WriteLine($"registered pin {pin}.");
+            }
             
         }
 
