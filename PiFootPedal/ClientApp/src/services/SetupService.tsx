@@ -6,7 +6,7 @@ export default class SetupService extends BaseService {
 
     constructor(isDebug: boolean){
         super();
-        let piUrl = "192.168.1.73";
+        let piUrl = "192.168.1.76";
         this.baseUrl = isDebug ? `https://${piUrl}:8000/api/v1` : "/api/v1";//localhost
     }
 

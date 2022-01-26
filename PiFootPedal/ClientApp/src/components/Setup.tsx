@@ -40,7 +40,6 @@ export default class Setup extends BaseComponent<SetupProps, SetupState> {
         let setup = this;
         this.setupService.getButtons()
             .then(data => {
-                console.log('pins', data);
                 setup.setState({
                     buttonPins: Array.from(data.buttonPins)
                 });
