@@ -9,10 +9,7 @@ public class PollService
 {
     private readonly ConfigService _configService;
     private readonly Dictionary<int, ButtonState> _pinChanges = new();
-
-    public bool IsDebug => _configService.GetConfig()?.IsVerbose ?? true;
     public PollModes PollMode { get; set; }
-
     private GpioController _gpio;
     public readonly SetupInfo SetupInfo = new();
 
@@ -21,7 +18,7 @@ public class PollService
 
     private static readonly int[] ValidButtonGpioPins =
     {
-        4, /*17,*/27, 22, 5, 6, 13, 19, 26, //todo add 17 back in, it's an led currently
+        4, /*17,*/27, 22, 5, 6, 13, 19, 26, //todo add 17 back in, it's an led currently, + add other valid gpio pins
         18, 23, 24, 25, 12, 16, 20
     };
 
@@ -42,13 +39,6 @@ public class PollService
         _gpio = new GpioController();
         _gpio.OpenPin(LedPin, PinMode.Output);
         RegisterButton(buttonPin);
-
-        var i = 0;
-        while (true)
-        {
-            await Task.Delay(500);
-            Console.WriteLine($"test {i++}");
-        }
     }
 
     private bool RegisterButton(int pin)
@@ -65,7 +55,7 @@ public class PollService
     private void UnregisterButton(int pin)
     {
         var open = _gpio.IsPinOpen(pin);
-        Console.WriteLine($"closing pin {pin}, open? {open}");
+        LogService.WriteLine($"closing pin {pin}, open? {open}");
         _pinChanges.Remove(pin);
         if (open)
         {
@@ -84,7 +74,7 @@ public class PollService
         if (ts - button.LastChanged > TicksPerMs * DebounceMs)
         {
             button.PinEvent = pin.ChangeType;
-            Console.WriteLine($"{pin.PinNumber} is {button.PinEvent} {(ts - button.LastChanged) / (TicksPerMs)}");
+            LogService.WriteLine($"{pin.PinNumber} is {button.PinEvent} {(ts - button.LastChanged) / (TicksPerMs)}");
             button.LastChanged = ts;
 
             _ledOn = pin.ChangeType == PinEventTypes.Falling;
@@ -92,7 +82,7 @@ public class PollService
 
             if (PollMode == PollModes.Setup)
             {
-                Console.WriteLine($"Adding pin {pin.PinNumber}");
+                LogService.WriteLine($"Adding pin {pin.PinNumber}");
                 SetupInfo.ButtonPins.Add(pin.PinNumber);
                 return;
             }
@@ -105,23 +95,17 @@ public class PollService
             {
                 if (button.PinEvent == PinEventTypes.Falling)
                 {
-                    //button pressed
                     Task.Run(async () => await action.Press(button));
                     button.PressCounter++;
-                    //Console.WriteLine(string.Join(", ", action.Keys.Select(x => $"{(x.Modifier.HasValue ? $"{x.Modifier} + " : string.Empty)}{x.Key}")));
                 }
                 else
                 {
-                    //button released
                     Task.Run(async () => await action.Release(button));
                 }
             }
             else
             {
-                if (IsDebug)
-                {
-                    Console.WriteLine($"Error: Could not find action for pin {pin.PinNumber}");
-                }
+                LogService.WriteLine($"Error: Could not find action for pin {pin.PinNumber}");
             }
         }
     }
@@ -133,12 +117,12 @@ public class PollService
 
         foreach (var pin in ValidButtonGpioPins)
         {
-            Console.WriteLine($"registering pin {pin}");
+            LogService.WriteLine($"registering pin {pin}");
             UnregisterButton(pin);
             var registered = RegisterButton(pin);
             if (registered)
             {
-                Console.WriteLine($"registered pin {pin}.");
+                LogService.WriteLine($"registered pin {pin}.");
             }
             
         }

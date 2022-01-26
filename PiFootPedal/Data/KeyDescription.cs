@@ -1,4 +1,5 @@
 ﻿using PiFootPedal.Enums;
+using PiFootPedal.Services;
 
 namespace PiFootPedal.Data;
 
@@ -31,8 +32,8 @@ public class KeyDescription
         char[] str = {
             Modifier.HasValue ? (char)Modifier : '\0', '\0', (char)Key, '\0', '\0', '\0', '\0', '\0'
         };
-        var bytes = str.SelectMany(BitConverter.GetBytes).ToArray();
-        File.WriteAllBytes("/dev/hidg0", bytes);
+        File.WriteAllText("/dev/hidg0", string.Join("", str));
+        LogService.WriteLine($"sent {Modifier ?? ModifierKeys.None} + {Key}");
     }
 
     public void WriteReleaseAll()
@@ -40,7 +41,7 @@ public class KeyDescription
         char[] str = {
             '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
         };
-        var bytes = str.SelectMany(BitConverter.GetBytes).ToArray();
-        File.WriteAllBytes("/dev/hidg0", bytes);
+        File.WriteAllText("/dev/hidg0", string.Join("", str));
+        LogService.WriteLine($"released {Modifier ?? ModifierKeys.None} + {Key}");
     }
 }

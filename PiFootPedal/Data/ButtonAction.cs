@@ -70,7 +70,7 @@ public class ButtonAction
     private async Task Release(KeyDescription key)
     {
         await key.PreSleep();
-        key.Write();
+        key.WriteReleaseAll();
         await key.PostSleep();
     }
 }

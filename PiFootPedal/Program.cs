@@ -25,7 +25,6 @@ builder.Services.Add(ServiceDescriptor.Singleton(x =>
 builder.Services.Add(ServiceDescriptor.Singleton(x =>
 {
     var configService = x.GetService<ConfigService>() ?? throw new InvalidOperationException();
-    configService.Setup();//debug defaults
     configService.Save();
     return new PollService(configService);
 }));
@@ -35,6 +34,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+LogService.Setup(app.Services.GetService<ConfigService>());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -93,7 +93,7 @@ Task.Run(async () =>
     }
     catch (Exception e)
     {
-        Console.WriteLine($"Error starting pollService: {e}");
+        Console.WriteLine($"FATAL: Error starting pollService: {e}");
     }
 });
 
